@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginxdemo-hello
+  labels:
+    app: nginxdemo-hello
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginxdemo-hello
+  template:
+    metadata:
+      labels:
+        app: nginxdemo-hello
+    spec:
+      containers:
+      - name: nginxdemo-hello
+        image: nginxdemos/hello:plain-text
+        ports:
+        - name: http
+          containerPort: 80
+        imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginxdemo-hello
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: external
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
+
+spec:
+  externalTrafficPolicy: Local
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+    - name: https
+      port: 443
+      targetPort: 80
+  type: LoadBalancer
+  selector:
+    app: nginxdemo-hello

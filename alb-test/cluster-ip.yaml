@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: testapp
+  template:
+    metadata:
+      labels:
+        app: testapp
+    spec:
+      containers:
+      - image: public.ecr.aws/u2g6w7p2/eks-workshop-demo/simplewebserver:1.0
+        name: simplewebserver
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: testapp
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80 
+      name: http 
+  selector:
+    app: testapp

@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: evenly-distribute
+  labels:
+    app: evenly-distribute
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: evenly-distribute
+  template:
+    metadata:
+      labels:
+        app: evenly-distribute
+    spec:
+     containers:
+      - name: nginx
+        image: public.ecr.aws/nginx/nginx:1.21
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+        ports:
+        - name: http
+          containerPort: 80

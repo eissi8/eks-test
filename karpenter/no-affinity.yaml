@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: no-affinity
+  labels:
+    app: no-affinity
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: no-affinity
+  template:
+    metadata:
+      labels:
+        app: no-affinity
+    spec:
+     containers:
+      - name: nginx
+        image: public.ecr.aws/nginx/nginx:1.21
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+        ports:
+        - name: http
+          containerPort: 80

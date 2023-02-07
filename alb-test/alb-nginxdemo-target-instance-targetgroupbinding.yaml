@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginxdemo-hello2
+  labels:
+    app: nginxdemo-hello2
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginxdemo-hello2
+  template:
+    metadata:
+      labels:
+        app: nginxdemo-hello2
+    spec:
+      containers:
+      - name: nginxdemo-hello2
+        image: nginxdemos/hello:plain-text
+        ports:
+        - name: http
+          containerPort: 80
+        imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginxdemo-hello2
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+  type: NodePort
+  selector:
+    app: nginxdemo-hello2
+---
+apiVersion: elbv2.k8s.aws/v1beta1
+kind: TargetGroupBinding
+metadata:
+  name: my-tgb
+spec:
+  serviceRef:
+    name: nginxdemo-hello2 # route traffic to the awesome-service
+    port: 80
+  targetGroupARN: arn:aws:elasticloadbalancing:ap-northeast-2:592446325190:targetgroup/k8s-default-nginxdem-e3eebf2897/f516193a2189edce

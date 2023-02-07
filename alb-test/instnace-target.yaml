@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: instance-target
+  labels:
+    app: instance-target
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: instance-target
+  template:
+    metadata:
+      labels:
+        app: instance-target
+    spec:
+      containers:
+      - name: instance-target
+        image: nginxdemos/hello:plain-text
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+        ports:
+        - name: http
+          containerPort: 80
+        imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: instance-target
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+  type: NodePort
+  selector:
+    app: instance-target
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: instance-target
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+spec:
+  ingressClassName: alb
+  rules:
+    - http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: instance-target
+              port:
+                number: 80

@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: evenly-distribute
+  labels:
+    app: evenly-distribute
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: evenly-distribute
+  template:
+    metadata:
+      labels:
+        app: evenly-distribute
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: topology/zone
+                operator: In
+                values: 
+                - ap-northeast-2a
+      containers:
+      - name: nginx
+        image: public.ecr.aws/nginx/nginx:1.21
+        ports:
+        - name: http
+          containerPort: 80
+        imagePullPolicy: IfNotPresent
+      nodeSelector:
+        kubernetes.io/os: linux

@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ilb-instance-target
+  labels:
+    app: ilb-instance-target
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ilb-instance-target
+  template:
+    metadata:
+      labels:
+        app: ilb-instance-target
+    spec:
+      containers:
+      - name: ilb-instance-target
+        image: nginxdemos/hello:plain-text
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+        ports:
+        - name: http
+          containerPort: 80
+        imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ilb-instance-target
+spec:
+  externalTrafficPolicy: Local
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+  type: NodePort
+  selector:
+    app: ilb-instance-target
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ilb-instance-target
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internal
+spec:
+  ingressClassName: alb
+  rules:
+    - http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: ilb-instance-target
+              port:
+                number: 80
