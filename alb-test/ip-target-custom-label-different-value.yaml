@@ -1,28 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: even-host
+  name: ip-target-2
   labels:
-    app: even-host
+    app: ip-target-2
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
-      app: even-host
+      app: ip-target-2
   template:
     metadata:
       labels:
-        app: even-host
+        app: ip-target-2
     spec:
-      topologySpreadConstraints:
-        - maxSkew: 1
-          topologyKey: topology.kubernetes.io/zone 
-          whenUnsatisfiable: ScheduleAnyway
-          labelSelector:
-            matchLabels:
-              app: even-host
+      nodeSelector:
+        karpenter.sh/capacity-type: spot
+        capacity-spread: "ip-target-2"
       containers:
-      - name: even-host
+      - name: ip-target-2
         image: nginxdemos/hello:plain-text
         resources:
           requests:

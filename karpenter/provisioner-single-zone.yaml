@@ -1,0 +1,26 @@
+apiVersion: karpenter.sh/v1alpha5
+kind: Provisioner
+metadata:
+  name: single-zone
+spec:
+  weight: 90
+  consolidation:
+    enabled: true
+  requirements:
+    - key: karpenter.k8s.aws/instance-category
+      operator: In
+      values: [c, m, r]
+    - key: karpenter.k8s.aws/instance-generation
+      operator: Gt
+      values: ["2"]
+    - key: "topology.kubernetes.io/zone"
+      operator: In
+      values: ["ap-northeast-2a"]
+    - key: karpenter.sh/capacity-type
+      operator: In
+      values: ["spot"]
+    - key: single-zone
+      operator: In
+      values: ["true"]
+  providerRef:
+    name: default

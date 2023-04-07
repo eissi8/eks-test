@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-selector
+  labels:
+    app: node-selector
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: node-selector
+  template:
+    metadata:
+      labels:
+        app: node-selector
+    spec:
+      nodeSelector:
+        single-zone: "true"
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: "topology.kubernetes.io/zone"
+                operator: "In"
+                values: ["ap-northeast-2b"]
+      containers:
+      - name: node-selector
+        image: nginxdemos/hello:plain-text
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "200m"
+        ports:
+        - name: http
+          containerPort: 80
+        imagePullPolicy: IfNotPresent

@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ip-target
+  labels:
+    app: ip-target
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ip-target
+  template:
+    metadata:
+      labels:
+        app: ip-target
+    spec:
+      nodeSelector:
+        topology.kubernetes.io/zone: ap-northeast-2a
+        karpenter.sh/capacity-type: spot
+      containers:
+      - name: ip-target
+        image: nginxdemos/hello:plain-text
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "200m"
+        ports:
+        - name: http
+          containerPort: 80
+        imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ip-target
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+  type: NodePort
+  selector:
+    app: ip-target
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ip-target
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  ingressClassName: alb
+  rules:
+    - http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: ip-target
+              port:
+                number: 80

@@ -1,32 +1,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: even-host
+  name: ts-zone
   labels:
-    app: even-host
+    app: ts-zone
 spec:
-  replicas: 3
+  replicas: 50
   selector:
     matchLabels:
-      app: even-host
+      app: ts-zone
   template:
     metadata:
       labels:
-        app: even-host
+        app: ts-zone
     spec:
       topologySpreadConstraints:
         - maxSkew: 1
-          topologyKey: topology.kubernetes.io/zone 
-          whenUnsatisfiable: ScheduleAnyway
+          topologyKey: "topology.kubernetes.io/zone"
+          whenUnsatisfiable: DoNotSchedule
           labelSelector:
             matchLabels:
-              app: even-host
+              app: ts-zone
       containers:
-      - name: even-host
+      - name: ts-zone
         image: nginxdemos/hello:plain-text
         resources:
           requests:
-            memory: "512Mi"
+            memory: "256Mi"
             cpu: "200m"
         ports:
         - name: http

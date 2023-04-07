@@ -1,28 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: even-host
+  name: ts-custom
   labels:
-    app: even-host
+    app: ts-custom
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
-      app: even-host
+      app: ts-custom
   template:
     metadata:
       labels:
-        app: even-host
+        app: ts-custom
     spec:
       topologySpreadConstraints:
         - maxSkew: 1
-          topologyKey: topology.kubernetes.io/zone 
-          whenUnsatisfiable: ScheduleAnyway
+          topologyKey: "capacity-spread"
+          whenUnsatisfiable: DoNotSchedule
           labelSelector:
             matchLabels:
-              app: even-host
+              app: ts-custom
       containers:
-      - name: even-host
+      - name: ts-custom
         image: nginxdemos/hello:plain-text
         resources:
           requests:

@@ -1,28 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: even-host
+  name: ts-home
   labels:
-    app: even-host
+    app: ts-home
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
-      app: even-host
+      app: ts-home
   template:
     metadata:
       labels:
-        app: even-host
+        app: ts-home
     spec:
       topologySpreadConstraints:
         - maxSkew: 1
-          topologyKey: topology.kubernetes.io/zone 
-          whenUnsatisfiable: ScheduleAnyway
+          topologyKey: "kubernetes.io/hostname"
+          whenUnsatisfiable: DoNotSchedule
           labelSelector:
             matchLabels:
-              app: even-host
+              app: ts-home
       containers:
-      - name: even-host
+      - name: ts-home
         image: nginxdemos/hello:plain-text
         resources:
           requests:

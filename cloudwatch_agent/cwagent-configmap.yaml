@@ -8,6 +8,7 @@ data:
       "logs": {
         "metrics_collected": {
           "kubernetes": {
+            "cluster_name": "mine",
             "metrics_collection_interval": 60
           }
         },

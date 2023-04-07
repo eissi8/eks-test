@@ -1,28 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: even-host
+  name: tolerations
   labels:
-    app: even-host
+    app: tolerations
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
-      app: even-host
+      app: tolerations
   template:
     metadata:
       labels:
-        app: even-host
+        app: tolerations
     spec:
-      topologySpreadConstraints:
-        - maxSkew: 1
-          topologyKey: topology.kubernetes.io/zone 
-          whenUnsatisfiable: ScheduleAnyway
-          labelSelector:
-            matchLabels:
-              app: even-host
+      tolerations:
+      - key: "leejungh"
+        operator: "Exists"
+        effect: "NoSchedule"
       containers:
-      - name: even-host
+      - name: tolerations
         image: nginxdemos/hello:plain-text
         resources:
           requests:
